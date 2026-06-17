@@ -5,7 +5,7 @@ Zip Pay; ZIPPAY,Zip Pay,bnpl,keyword
 Zipmoney; Zip Money,Zip Money,bnpl,keyword
 Yamaha Motor Finance; Yamaha Motor Fin,Yamaha Motor Finance,personal_loan,keyword
 Wisr; Wisr-smarter money habits,Wisr,personal_loan,keyword
-WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC,Westpac,bank,keyword
+WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC CARDS,WESTPAC Credit Card Repayment,bank,keyword
 Wagetap; Wagetap: Instant Cash Advance,Wagetap,wage_advance,keyword
 Wagepay; Wagepay: Instant Pay Advance; WAGEPAYCT,Wagepay,wage_advance,keyword
 Volkswagen Financial,Volkswagen Financial,personal_loan,keyword
@@ -53,7 +53,7 @@ NextPayday,NextPayday,personal_loan,keyword
 NEWCASTLE Credit Card Cash Adv; NEWCASTLE Loans; newcastle,Newcastle,personal_loan,keyword
 Needy Loans,Needy Loans,personal_loan,keyword
 NAB Now Pay Later,NAB Now Pay Later,bnpl,keyword
-NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB,bank,keyword
+NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB Credit Card Repayment,bank,keyword
 MyPayNow,MyPayNow,wage_advance,keyword
 MyCashOnline,MyCashOnline,personal_loan,keyword
 My OZ Money,My OZ Money,personal_loan,keyword
@@ -73,7 +73,7 @@ Latitude Financial; Latitude Motor,Latitude Financial,personal_loan,keyword
 Klarna,Klarna,bnpl,keyword
 JP Finance and Investment,JP Finance and Investment,personal_loan,keyword
 Jacaranda Finance; BetterCredit Jacaranda Finance; JacarandaFinance; Jacaranda,Jacaranda Finance,personal_loan,keyword
-ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans,ING,bank,keyword
+Latitude Credit Card Repayment,Latitude Credit Card Repayment,bank,keyword
 Humm; humm loan,Humm,bnpl,keyword
 Home Loan,Home Loan,personal_loan,keyword
 Harmoney,Harmoney,personal_loan,keyword
@@ -118,14 +118,14 @@ CarCoop,CarCoop,personal_loan,keyword
 Brighte,Brighte,bnpl,keyword
 Branded Financial,Branded Financial,personal_loan,keyword
 Beforepay; Beforepay: Borrow up to 2000; BeforepayCT,Beforepay,bnpl,keyword
-BANKWEST Credit Card Cash Adva; BANKWEST Loans; BANKWEST,Bankwest,bank,keyword
+ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans,ING Credit Card Repayment,bank,keyword
 Azora Finance,Azora Finance,personal_loan,keyword
 Autopay,Autopay,personal_loan,keyword
 Automotive Financial Services,Automotive Financial Services,personal_loan,keyword
 Auto Finance Loans,Auto Finance Loans,personal_loan,keyword
 Arteva Funding,Arteva Funding,personal_loan,keyword
 APS Loans,APS Loans,personal_loan,keyword
-ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ,bank,keyword
+COLES MASTERCARD,Coles Credit Card Repayment,bank,keyword
 Angle Finance,Angle Finance,personal_loan,keyword
 Allied Retail Finance,Allied Retail Finance,personal_loan,keyword
 Afterpay; Afterpay: Shop Smarter,Afterpay,bnpl,keyword
@@ -134,6 +134,5 @@ Affordable Car Loans,Affordable Car Loans,personal_loan,keyword
 1st Choice Rentals,1st Choice Rentals,personal_loan,keyword
 Car Loan,Car Loan,personal_loan_carloan,keyword
 "PAYMENT RECEIVED, THANK YOU",CBA Credit Card Repayment,bank,keyword
-COLES MASTERCARD,Coles Credit Card Repayment,bank,keyword
-Latitude Credit Card Repayment,Latitude Credit Card Repayment,bank,keyword
-WESTPAC CARDS,WESTPAC Credit Card Repayment,bank,keyword
+BANKWEST Credit Card Cash Adva; BANKWEST Loans; ,Bankwest Credit Card Repayment,bank,keyword
+ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ Credit Card Repayment,bank,keyword
