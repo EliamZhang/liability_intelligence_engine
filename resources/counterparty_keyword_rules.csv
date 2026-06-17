@@ -1,12 +1,14 @@
 keyword,counterparty,product_type,match_type
-WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC CARDS,WESTPAC Credit Card Repayment,bank,keyword
+WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC CARDS;FROM Westpa c Choice,WESTPAC Credit Card Repayment,bank,keyword
 NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB Credit Card Repayment,bank,keyword
-Latitude Credit Card Repayment; LATITUDE GO,Latitude Credit Card Repayment,bank,keyword
+Latitude Credit Card Repayment; LATITUDE GO;BPAY LATITUDE GEM,Latitude Credit Card Repayment,bank,keyword
 ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans,ING Credit Card Repayment,bank,keyword
 COLES MASTERCARD,Coles Credit Card Repayment,bank,keyword
-"PAYMENT RECEIVED, THANK YOU",CBA Credit Card Repayment,bank,keyword
+"PAYMENT RECEIVED, THANK YOU;PAYMENT RECEIVED",CBA Credit Card Repayment,bank,keyword
 BANKWEST Credit Card Cash Adva; BANKWEST Loans; ,Bankwest Credit Card Repayment,bank,keyword
 ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ Credit Card Repayment,bank,keyword
+AMERICAN EXPRESS CommBank app BPAY,American Express Credit Card Repayment,bank,keyword
+Payment - BPAY,Miscellaneous Credit Card Repayments,bank,keyword
 1 of 4;2 of 4;3 of 4;4 of 4;,NAB Now Pay Later,bnpl,keyword
 Zip Plus,Zip Plus,bnpl,keyword
 Zip Pay; ZIPPAY,Zip Pay,bnpl,keyword
