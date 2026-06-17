@@ -1,4 +1,5 @@
 import csv
+import os
 
 
 def assign_stream_ids(input_file, output_file):
@@ -27,7 +28,9 @@ def assign_stream_ids(input_file, output_file):
             app_streams[key] = f"{prefix}_{len(app_streams) + 1:03d}"
         row["stream_id"] = app_streams[key]
 
-    with open(output_file, "w", encoding="utf-8-sig", newline="") as f:
+    temp_file = output_file + ".tmp"
+    with open(temp_file, "w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+    os.replace(temp_file, output_file)
