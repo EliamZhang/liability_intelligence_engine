@@ -1,133 +1,139 @@
-keyword,counterparty,loan_type
-Zip Plus,Zip Plus,bnpl
-Zip Pay; ZIPPAY,Zip Pay,bnpl
-Zipmoney; Zip Money,Zip Money,bnpl
-Yamaha Motor Finance; Yamaha Motor Fin,Yamaha Motor Finance,personal_loan
-Wisr; Wisr-smarter money habits,Wisr,personal_loan
-WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC,Westpac,bank
-Wagetap; Wagetap: Instant Cash Advance,Wagetap,wage_advance
-Wagepay; Wagepay: Instant Pay Advance; WAGEPAYCT,Wagepay,wage_advance
-Volkswagen Financial,Volkswagen Financial,personal_loan
-VetPay,VetPay,personal_loan
-Ume Loans,Ume Loans,personal_loan
-Toyota Finance,Toyota Finance,personal_loan
-Thorn Group,Thorn Group,personal_loan
-Taurus Motor Finance,Taurus Motor Finance,personal_loan
-Swoosh Finance; Ausfinancial Pty Ltd; AusFinancial Pty,Swoosh Finance,personal_loan
-Sure Cash,Sure Cash,personal_loan
-Sunshine Loans; Sunshine Sunshine; Sunshine Deposit,Sunshine Loans,personal_loan
-Stay Finance,Stay Finance,personal_loan
-St George Loans,St George Loans,personal_loan
-Square Loans,Square Loans,personal_loan
-Spotter Loan; Spotter Loans,Spotter Loans,personal_loan
-Splend,Splend,personal_loan
-Speedle Loans; Speedle,Speedle Loans,personal_loan
-Society One,Society One,personal_loan
-Snaffle,Snaffle,personal_loan
-Salt and Lime; Salt and Lime Loans,Salt and Lime,personal_loan
-SALT&LIME,Salt and Lime,personal_loan
-Safe Financial,Safe Financial,personal_loan
-Resimac,Resimac,personal_loan
-Red Tree Finance,Red Tree Finance,personal_loan
-Rapid Loans,Rapid Loans,personal_loan
-R4K Group; R4K Services,R4K Group,personal_loan
-Quickzy; Quickzy Finance,Quickzy,personal_loan
-Quickcash,Quickcash,personal_loan
-Press Pay; PressPay,PressPay,wage_advance
-Poligon Group,Poligon Group,personal_loan
-Plenti,Plenti,personal_loan
-Pepper Money,Pepper Money,personal_loan
-PEOPLESCHOICECU Loans; People's Choice,People's Choice,personal_loan
-Payright,Payright,bnpl
-Paypal Pay in 4; PayPal Pay in 4; Pay in 4; Payin4,PayPal Pay in 4,bnpl
-PayLater Travel,PayLater Travel,personal_loan
-Paylab,Paylab,personal_loan
-PayExpress; SEMVIA FINANCE PTY LTD; SEMVIA FINANCE,PayExpress,personal_loan
-Payday Advance; Payday Loans,Payday Advance,wage_advance
-OurMoneyMarket; our money market,Our Money Market,personal_loan
-Now Finance,Now Finance,personal_loan
-Nissan Finance,Nissan Finance,personal_loan
-Nimble; Nimble AnyTime,Nimble,personal_loan
-NextPayday,NextPayday,personal_loan
-NEWCASTLE Credit Card Cash Adv; NEWCASTLE Loans; newcastle,Newcastle,personal_loan
-Needy Loans,Needy Loans,personal_loan
-NAB Now Pay Later,NAB Now Pay Later,bnpl
-NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB,bank
-MyPayNow,MyPayNow,wage_advance
-MyCashOnline,MyCashOnline,personal_loan
-My OZ Money,My OZ Money,personal_loan
-Moneyspot,MoneySpot,personal_loan
-MoneyPlus; Money Plus,MoneyPlus,personal_loan
-MoneyMe,MoneyMe,personal_loan
-Money3,Money3,personal_loan
-Money Place,Money Place,personal_loan
-Money Centre,Money Centre,personal_loan
-Mercedes-Benz Financial Services,Mercedes-Benz Financial Services,personal_loan
-Mazda Finance,Mazda Finance,personal_loan
-Macquarie Leasing,Macquarie Leasing,personal_loan
-Lowes Zero Card,Lowes Zero Card,bnpl
-Liberty Financial,Liberty Financial,personal_loan
-Layaway,Layaway,bnpl
-Latitude Financial; Latitude Motor,Latitude Financial,personal_loan
-Klarna,Klarna,bnpl
-JP Finance and Investment,JP Finance and Investment,personal_loan
-Jacaranda Finance; BetterCredit Jacaranda Finance; JacarandaFinance; Jacaranda,Jacaranda Finance,personal_loan
-ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans; ING,ING,bank
-Humm; humm loan,Humm,bnpl
-Home Loan,Home Loan,personal_loan
-Harmoney,Harmoney,personal_loan
-Handout Loans,Handout Loans,personal_loan
-Green Light Auto Finance,Green Light Auto Finance,personal_loan
-Good To Go,Good To Go,personal_loan
-Golden Bridge Cash Solution; GOLDEN BRIDGE; GOLDEN BRIDGE ENTERP; GOLDEN BRIDGE ENTERPRISE,Golden Bridge Cash Solution,personal_loan
-Gimmie,Gimmie,bnpl
-General Mortgage,General Mortgage,personal_loan
-Gedda Money,Gedda Money,personal_loan
-Fundo Loans; Fundo; FUNDOLOANS,Fundo Loans,personal_loan
-Fundency,Fundency,personal_loan
-Flash Money,Flash Money,personal_loan
-First Mortgage Company,First Mortgage Company,personal_loan
-Finance One,Finance One,personal_loan
-Fair Go Finance; FairGO; Fair Go Finance SACC; FGF 254519,Fair Go Finance,personal_loan
-Earned Wage Access,Earned Wage Access,personal_loan
-Difrent Rental,Difrent Rental,personal_loan
-DentiCare,DentiCare,personal_loan
-Deferit,Deferit,bnpl
-Credit24,Credit24,personal_loan
-Credit Corp Loan; Credit Corp Loans; Credit Corp Fina; Credit Corp Fins; CrediCorp; CREDIT CORP GROUP LIM; CREDIT CORP GROUP LI; CREDIT CORP CommBank app BPAY; CCFS SYDNEY,Credit Corp,personal_loan
-City Finance,City Finance,personal_loan
-Citibank Loans; Citi,Citibank Loans,personal_loan
-Circlepay,Circlepay,personal_loan
-Cigno Loans; Cigno Austalia,Cigno Loans,personal_loan
-Champion Loans,Champion Loans,personal_loan
-CBA StepPay; StepPay Repayment; STEPPAY PYMT-THANK YOU,CBA StepPay,bnpl
-CBA Loans; Loan Repayment LN REPAY,CBA Loans,personal_loan
-CashPal,CashPal,personal_loan
-CashFaster,CashFaster,personal_loan
-Cash Train,Cash Train,personal_loan
-Cash Stop,Cash Stop,personal_loan
-Cash Savvy,Cash Savvy,personal_loan
-Cash Place,Cash Place,personal_loan
-Cash Now,Cash Now,personal_loan
-Cash N Go; cashngo,Cash N Go,personal_loan
-Cash Direct,Cash Direct,personal_loan
-Cash Converters; Cash Converters My Loans,Cash Converters,personal_loan
-Cash Bridge; Sunbow Finance; CB Loan,Cash Bridge,personal_loan
-CarCoop,CarCoop,personal_loan
-Brighte,Brighte,bnpl
-Branded Financial,Branded Financial,personal_loan
-Beforepay; Beforepay: Borrow up to 2000; BeforepayCT,Beforepay,bnpl
-BANKWEST Credit Card Cash Adva; BANKWEST Loans; BANKWEST,Bankwest,bank
-Azora Finance,Azora Finance,personal_loan
-Autopay,Autopay,personal_loan
-Automotive Financial Services,Automotive Financial Services,personal_loan
-Auto Finance Loans,Auto Finance Loans,personal_loan
-Arteva Funding,Arteva Funding,personal_loan
-APS Loans,APS Loans,personal_loan
-ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ,bank
-Angle Finance,Angle Finance,personal_loan
-Allied Retail Finance,Allied Retail Finance,personal_loan
-Afterpay; Afterpay: Shop Smarter,Afterpay,bnpl
-Affordable Car Loans,Affordable Car Loans,personal_loan
-360 Cash Loans; LazerMoney,360 Cash Loans,personal_loan
-1st Choice Rentals,1st Choice Rentals,personal_loan
+keyword,counterparty,product_type,match_type
+n of n,NAB Now Pay Later,bnpl,structure
+Zip Plus,Zip Plus,bnpl,keyword
+Zip Pay; ZIPPAY,Zip Pay,bnpl,keyword
+Zipmoney; Zip Money,Zip Money,bnpl,keyword
+Yamaha Motor Finance; Yamaha Motor Fin,Yamaha Motor Finance,personal_loan,keyword
+Wisr; Wisr-smarter money habits,Wisr,personal_loan,keyword
+WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC,Westpac,bank,keyword
+Wagetap; Wagetap: Instant Cash Advance,Wagetap,wage_advance,keyword
+Wagepay; Wagepay: Instant Pay Advance; WAGEPAYCT,Wagepay,wage_advance,keyword
+Volkswagen Financial,Volkswagen Financial,personal_loan,keyword
+VetPay,VetPay,personal_loan,keyword
+Ume Loans,Ume Loans,personal_loan,keyword
+Toyota Finance,Toyota Finance,personal_loan,keyword
+Thorn Group,Thorn Group,personal_loan,keyword
+Taurus Motor Finance,Taurus Motor Finance,personal_loan,keyword
+Swoosh Finance; Ausfinancial Pty Ltd; AusFinancial Pty,Swoosh Finance,personal_loan,keyword
+Sure Cash,Sure Cash,personal_loan,keyword
+Sunshine Loans; Sunshine Sunshine; Sunshine Deposit,Sunshine Loans,personal_loan,keyword
+Stay Finance,Stay Finance,personal_loan,keyword
+St George Loans,St George Loans,personal_loan,keyword
+Square Loans,Square Loans,personal_loan,keyword
+Spotter Loan; Spotter Loans,Spotter Loans,personal_loan,keyword
+Splend,Splend,personal_loan,keyword
+Speedle Loans; Speedle,Speedle Loans,personal_loan,keyword
+Society One,Society One,personal_loan,keyword
+Snaffle,Snaffle,personal_loan,keyword
+Salt and Lime; Salt and Lime Loans,Salt and Lime,personal_loan,keyword
+SALT&LIME,Salt and Lime,personal_loan,keyword
+Safe Financial,Safe Financial,personal_loan,keyword
+Resimac,Resimac,personal_loan,keyword
+Red Tree Finance,Red Tree Finance,personal_loan,keyword
+Rapid Loans,Rapid Loans,personal_loan,keyword
+R4K Group; R4K Services,R4K Group,personal_loan,keyword
+Quickzy; Quickzy Finance,Quickzy,personal_loan,keyword
+Quickcash,Quickcash,personal_loan,keyword
+Press Pay; PressPay,PressPay,wage_advance,keyword
+Poligon Group,Poligon Group,personal_loan,keyword
+Plenti,Plenti,personal_loan,keyword
+Pepper Money,Pepper Money,personal_loan,keyword
+PEOPLESCHOICECU Loans; People's Choice,People's Choice,personal_loan,keyword
+Payright,Payright,bnpl,keyword
+Paypal Pay in 4; PayPal Pay in 4; Pay in 4; Payin4,PayPal Pay in 4,bnpl,keyword
+PayLater Travel,PayLater Travel,personal_loan,keyword
+Paylab,Paylab,personal_loan,keyword
+PayExpress; SEMVIA FINANCE PTY LTD; SEMVIA FINANCE,PayExpress,personal_loan,keyword
+Payday Advance; Payday Loans,Payday Advance,wage_advance,keyword
+OurMoneyMarket; our money market,Our Money Market,personal_loan,keyword
+Now Finance,Now Finance,personal_loan,keyword
+Nissan Finance,Nissan Finance,personal_loan,keyword
+Nimble; Nimble AnyTime,Nimble,personal_loan,keyword
+NextPayday,NextPayday,personal_loan,keyword
+NEWCASTLE Credit Card Cash Adv; NEWCASTLE Loans; newcastle,Newcastle,personal_loan,keyword
+Needy Loans,Needy Loans,personal_loan,keyword
+NAB Now Pay Later,NAB Now Pay Later,bnpl,keyword
+NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB,bank,keyword
+MyPayNow,MyPayNow,wage_advance,keyword
+MyCashOnline,MyCashOnline,personal_loan,keyword
+My OZ Money,My OZ Money,personal_loan,keyword
+Moneyspot; Moneys,MoneySpot,personal_loan,keyword
+MoneyPlus; Money Plus,MoneyPlus,personal_loan,keyword
+MoneyMe,MoneyMe,personal_loan,keyword
+Money3,Money3,personal_loan,keyword
+Money Place,Money Place,personal_loan,keyword
+Money Centre,Money Centre,personal_loan,keyword
+Mercedes-Benz Financial Services,Mercedes-Benz Financial Services,personal_loan,keyword
+Mazda Finance,Mazda Finance,personal_loan,keyword
+Macquarie Leasing,Macquarie Leasing,personal_loan,keyword
+Lowes Zero Card,Lowes Zero Card,bnpl,keyword
+Liberty Financial,Liberty Financial,personal_loan,keyword
+Layaway,Layaway,bnpl,keyword
+Latitude Financial; Latitude Motor,Latitude Financial,personal_loan,keyword
+Klarna,Klarna,bnpl,keyword
+JP Finance and Investment,JP Finance and Investment,personal_loan,keyword
+Jacaranda Finance; BetterCredit Jacaranda Finance; JacarandaFinance; Jacaranda,Jacaranda Finance,personal_loan,keyword
+ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans,ING,bank,keyword
+Humm; humm loan,Humm,bnpl,keyword
+Home Loan,Home Loan,personal_loan,keyword
+Harmoney,Harmoney,personal_loan,keyword
+Handout Loans,Handout Loans,personal_loan,keyword
+Green Light Auto Finance,Green Light Auto Finance,personal_loan,keyword
+Good To Go,Good To Go,personal_loan,keyword
+Golden Bridge Cash Solution; GOLDEN BRIDGE; GOLDEN BRIDGE ENTERP; GOLDEN BRIDGE ENTERPRISE,Golden Bridge Cash Solution,personal_loan,keyword
+Gimmie,Gimmie,bnpl,keyword
+General Mortgage,General Mortgage,personal_loan,keyword
+Gedda Money,Gedda Money,personal_loan,keyword
+Fundo Loans; Fundo; FUNDOLOANS,Fundo Loans,personal_loan,keyword
+Fundency,Fundency,personal_loan,keyword
+Flash Money,Flash Money,personal_loan,keyword
+First Mortgage Company,First Mortgage Company,personal_loan,keyword
+Finance One,Finance One,personal_loan,keyword
+Fair Go Finance; FairGO; Fair Go Finance SACC; FGF 254519,Fair Go Finance,personal_loan,keyword
+Earned Wage Access,Earned Wage Access,personal_loan,keyword
+Difrent Rental,Difrent Rental,personal_loan,keyword
+DentiCare,DentiCare,personal_loan,keyword
+Deferit,Deferit,bnpl,keyword
+Credit24,Credit24,personal_loan,keyword
+Credit Corp Loan; Credit Corp Loans; Credit Corp Fina; Credit Corp Fins; CrediCorp; CREDIT CORP GROUP LIM; CREDIT CORP GROUP LI; CREDIT CORP CommBank app BPAY; CCFS SYDNEY,Credit Corp,personal_loan,keyword
+City Finance,City Finance,personal_loan,keyword
+Citibank Loans; Citi,Citibank Loans,personal_loan,keyword
+Circlepay,Circlepay,personal_loan,keyword
+Cigno Loans; Cigno Austalia,Cigno Loans,personal_loan,keyword
+Champion Loans,Champion Loans,personal_loan,keyword
+CBA StepPay; StepPay Repayment; STEPPAY PYMT-THANK YOU,CBA StepPay,bnpl,keyword
+CBA Loans; Loan Repayment LN REPAY,CBA Loans,personal_loan,keyword
+CashPal,CashPal,personal_loan,keyword
+CashFaster,CashFaster,personal_loan,keyword
+Cash Train,Cash Train,personal_loan,keyword
+Cash Stop,Cash Stop,personal_loan,keyword
+Cash Savvy,Cash Savvy,personal_loan,keyword
+Cash Place,Cash Place,personal_loan,keyword
+Cash Now,Cash Now,personal_loan,keyword
+Cash N Go; cashngo,Cash N Go,personal_loan,keyword
+Cash Direct,Cash Direct,personal_loan,keyword
+Cash Converters; Cash Converters My Loans,Cash Converters,personal_loan,keyword
+Cash Bridge; Sunbow Finance; CB Loan,Cash Bridge,personal_loan,keyword
+CarCoop,CarCoop,personal_loan,keyword
+Brighte,Brighte,bnpl,keyword
+Branded Financial,Branded Financial,personal_loan,keyword
+Beforepay; Beforepay: Borrow up to 2000; BeforepayCT,Beforepay,bnpl,keyword
+BANKWEST Credit Card Cash Adva; BANKWEST Loans; BANKWEST,Bankwest,bank,keyword
+Azora Finance,Azora Finance,personal_loan,keyword
+Autopay,Autopay,personal_loan,keyword
+Automotive Financial Services,Automotive Financial Services,personal_loan,keyword
+Auto Finance Loans,Auto Finance Loans,personal_loan,keyword
+Arteva Funding,Arteva Funding,personal_loan,keyword
+APS Loans,APS Loans,personal_loan,keyword
+ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ,bank,keyword
+Angle Finance,Angle Finance,personal_loan,keyword
+Allied Retail Finance,Allied Retail Finance,personal_loan,keyword
+Afterpay; Afterpay: Shop Smarter,Afterpay,bnpl,keyword
+Affordable Car Loans,Affordable Car Loans,personal_loan,keyword
+360 Cash Loans; LazerMoney; 30/12 Financier,360 Cash Loans,personal_loan,keyword
+1st Choice Rentals,1st Choice Rentals,personal_loan,keyword
+Car Loan,Car Loan,personal_loan_carloan,keyword
+"PAYMENT RECEIVED, THANK YOU",CBA Credit Card Repayment,bank,keyword
+COLES MASTERCARD,Coles Credit Card Repayment,bank,keyword
+Latitude Credit Card Repayment,Latitude Credit Card Repayment,bank,keyword
+WESTPAC CARDS,WESTPAC Credit Card Repayment,bank,keyword
