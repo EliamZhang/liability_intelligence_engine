@@ -1,5 +1,7 @@
 import csv
 
+import pandas as pd
+
 
 def clean_fieldnames(rows, fieldnames):
     valid_fieldnames = [name for name in fieldnames if (name or "").strip()]
@@ -25,11 +27,31 @@ def load_rules(rules_file):
 
 
 def match_text(text, keyword_rules):
-    text = (text or "").lower()
+    text = "" if pd.isna(text) else str(text).lower()
     for keyword, counterparty, product_type in keyword_rules:
         if keyword in text:
             return counterparty, product_type
     return "", ""
+
+
+def clean_dataframe_columns(df):
+    valid_columns = [
+        column
+        for column in df.columns
+        if (str(column) or "").strip()
+        and not str(column).startswith("Unnamed:")
+    ]
+    return df.loc[:, valid_columns].copy()
+
+
+def apply_counterparty_rules(df, rules_file):
+    keyword_rules = load_rules(rules_file)
+    output = clean_dataframe_columns(df)
+    text_values = output.get("text", pd.Series("", index=output.index))
+    matches = text_values.map(lambda text: match_text(text, keyword_rules))
+    output["counterparty"] = matches.map(lambda match: match[0])
+    output["product_type"] = matches.map(lambda match: match[1])
+    return output
 
 
 def process_file(sample_file, rules_file, output_file):

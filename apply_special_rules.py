@@ -1,9 +1,19 @@
 import csv
 import os
 
+import pandas as pd
+
+
+def normalize_text(value):
+    if pd.isna(value):
+        return ""
+    return str(value)
+
 
 def parse_amount(row):
     value = row.get("amount")
+    if pd.isna(value):
+        return None
     try:
         return float(value)
     except (TypeError, ValueError):
@@ -11,11 +21,11 @@ def parse_amount(row):
 
 
 def apply_rules(row):
-    counterparty = row.get("counterparty", "")
-    text = (row.get("text") or "").lower()
+    counterparty = normalize_text(row.get("counterparty", ""))
+    text = normalize_text(row.get("text")).lower()
     amount = parse_amount(row)
-    is_dishonours = (row.get("is_dishonours") or "").strip().lower()
-    dr_cr = (row.get("dr_cr") or "").strip().lower()
+    is_dishonours = normalize_text(row.get("is_dishonours")).strip().lower()
+    dr_cr = normalize_text(row.get("dr_cr")).strip().lower()
 
     if (
         counterparty == "Cash Converters"
@@ -33,6 +43,16 @@ def apply_rules(row):
             row["product_type"] = "loc"
         elif "ccc" in text:
             row["product_type"] = "personal_loan"
+
+
+def apply_special_rules(df):
+    output = df.copy()
+    for row_id, row in output.iterrows():
+        updated_row = row.to_dict()
+        apply_rules(updated_row)
+        for column, value in updated_row.items():
+            output.at[row_id, column] = value
+    return output
 
 
 def process_file(input_file, output_file):

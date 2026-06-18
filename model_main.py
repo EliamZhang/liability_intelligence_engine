@@ -1,46 +1,41 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
-from match_counterparty import process_file
-from apply_special_rules import process_file as apply_special_rules
-from detect_dishonours import process_file as detect_dishonours
-from loan_summary import write_loan_summary_workbook
-from match_stream import assign_stream_ids
+import pandas as pd
 
-final_workbook = Path("output/sample_with_counterparty.xlsx")
-legacy_csv_output = Path("output/sample_with_counterparty.csv")
+from apply_special_rules import apply_special_rules
+from detect_dishonours import apply_dishonour_rules
+from loan_summary import write_loan_summary_workbook_from_dataframe
+from match_counterparty import apply_counterparty_rules
+from match_stream import add_final_product_type, identify_streams
 
-with TemporaryDirectory() as temp_dir:
-    counterparty_file = str(Path(temp_dir) / "sample_counterparty.csv")
-    dishonours_file = str(Path(temp_dir) / "sample_dishonours.csv")
-    special_rules_file = str(Path(temp_dir) / "sample_special_rules.csv")
-    final_csv_file = str(Path(temp_dir) / "sample_with_counterparty.csv")
 
-    process_file(
-        "sample.csv",
+FINAL_WORKBOOK = Path("output/sample_with_counterparty.xlsx")
+LEGACY_CSV_OUTPUT = Path("output/sample_with_counterparty.csv")
+
+
+def build_transactions() -> pd.DataFrame:
+    transactions = pd.read_csv("sample.csv", encoding="utf-8-sig")
+    transactions = apply_counterparty_rules(
+        transactions,
         "resources/counterparty_keyword_rules.csv",
-        counterparty_file,
     )
-
-    detect_dishonours(
-        counterparty_file,
+    transactions = apply_dishonour_rules(
+        transactions,
         "resources/dishonours_rules.csv",
-        dishonours_file,
     )
+    transactions = apply_special_rules(transactions)
+    transactions = identify_streams(transactions, reset_stream_ids=True)
+    return add_final_product_type(transactions)
 
-    apply_special_rules(
-        dishonours_file,
-        special_rules_file,
+
+def main() -> None:
+    transactions = build_transactions()
+    write_loan_summary_workbook_from_dataframe(
+        transactions,
+        FINAL_WORKBOOK,
     )
+    LEGACY_CSV_OUTPUT.unlink(missing_ok=True)
 
-    assign_stream_ids(
-        special_rules_file,
-        final_csv_file,
-    )
 
-    write_loan_summary_workbook(
-        final_csv_file,
-        final_workbook,
-    )
-
-legacy_csv_output.unlink(missing_ok=True)
+if __name__ == "__main__":
+    main()

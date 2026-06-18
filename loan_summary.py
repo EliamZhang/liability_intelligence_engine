@@ -11,9 +11,11 @@ import re
 
 import pandas as pd
 
-
-LOAN_SUMMARY_SHEET_NAME = "贷款总结"
-TRANSACTION_SHEET_NAME = "交易明细"
+from export import (
+    LOAN_SUMMARY_SHEET_NAME,
+    TRANSACTION_SHEET_NAME,
+    write_workbook,
+)
 
 SUMMARY_COLUMNS = [
     "final_product_type",
@@ -785,31 +787,21 @@ def write_loan_summary_workbook(
     product summaries or review output.
     """
 
-    workbook_path = Path(workbook_file)
-    workbook_path.parent.mkdir(parents=True, exist_ok=True)
-
     transactions = pd.read_csv(transactions_csv, encoding="utf-8-sig")
+    write_loan_summary_workbook_from_dataframe(
+        transactions,
+        workbook_file,
+        limits_file=limits_file,
+    )
+
+
+def write_loan_summary_workbook_from_dataframe(
+    transactions: pd.DataFrame,
+    workbook_file: str | Path,
+    limits_file: str | Path = "resources/bnpl_maximum_limits.csv",
+) -> None:
+    """Create or update the standard output workbook from transactions data."""
+
     transactions = ensure_final_product_type(transactions)
     summary = build_loan_summary(transactions, limits_file=limits_file)
-
-    mode = "a" if workbook_path.exists() else "w"
-    writer_kwargs: dict[str, object] = {"engine": "openpyxl", "mode": mode}
-    if mode == "a":
-        writer_kwargs["if_sheet_exists"] = "replace"
-
-    try:
-        with pd.ExcelWriter(workbook_path, **writer_kwargs) as writer:
-            transactions.to_excel(
-                writer,
-                index=False,
-                sheet_name=TRANSACTION_SHEET_NAME,
-            )
-            summary.to_excel(
-                writer,
-                index=False,
-                sheet_name=LOAN_SUMMARY_SHEET_NAME,
-            )
-    except PermissionError as exc:
-        raise PermissionError(
-            f"Cannot update {workbook_path}. Close the workbook and rerun."
-        ) from exc
+    write_workbook(transactions, summary, workbook_file)
