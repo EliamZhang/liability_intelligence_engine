@@ -868,10 +868,35 @@ def read_input_csv(input_file: str | Path) -> pd.DataFrame:
     return pd.read_csv(input_file, dtype={"stream_id": "string"})
 
 
+def add_final_product_type(df: pd.DataFrame) -> pd.DataFrame:
+    output = df.copy()
+    product_type = output["product_type"].astype("string").str.strip()
+    stream_base = (
+        output["stream_id"]
+        .astype("string")
+        .str.strip()
+        .str.replace(r"[-_]\d+$", "", regex=True)
+        .str.replace("-", "_", regex=False)
+    )
+
+    valid_mask = (
+        product_type.notna()
+        & product_type.ne("")
+        & stream_base.notna()
+        & stream_base.ne("")
+    )
+    output["final_product_type"] = pd.NA
+    output.loc[valid_mask, "final_product_type"] = (
+        product_type.loc[valid_mask] + "_" + stream_base.loc[valid_mask]
+    )
+    return output
+
+
 def write_output_csv(df: pd.DataFrame, output_file: str | Path) -> None:
     output_path = Path(output_file)
     temp_path = Path(f"{output_path}.tmp")
-    df.to_csv(temp_path, index=False, encoding="utf-8")
+    output = add_final_product_type(df)
+    output.to_csv(temp_path, index=False, encoding="utf-8")
     os.replace(temp_path, output_path)
 
 
