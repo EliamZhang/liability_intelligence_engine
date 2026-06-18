@@ -1,6 +1,15 @@
 import csv
 
 
+def clean_fieldnames(rows, fieldnames):
+    valid_fieldnames = [name for name in fieldnames if (name or "").strip()]
+    for row in rows:
+        for key in list(row):
+            if not (key or "").strip():
+                row.pop(key, None)
+    return valid_fieldnames
+
+
 def load_rules(rules_file):
     keyword_rules = []
     with open(rules_file, encoding="utf-8-sig", newline="") as f:
@@ -28,6 +37,7 @@ def process_file(sample_file, rules_file, output_file):
     with open(sample_file, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
         fieldnames = list(rows[0]) if rows else []
+        fieldnames = clean_fieldnames(rows, fieldnames)
         if "counterparty" not in fieldnames:
             fieldnames.append("counterparty")
         if "product_type" not in fieldnames:
