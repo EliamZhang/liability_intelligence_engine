@@ -182,13 +182,9 @@ def assign_grouped_product_streams(
     eligible_mask: pd.Series,
     prefix: str,
 ) -> int:
-    """Assign one stream per application + account + counterparty combination.
+    """Assign one globally unique stream per account + counterparty group."""
 
-    Numbering remains scoped to each application, matching the existing output:
-    ``loc_001``, ``bnpl_001``, ``wage_advance_001`` and ``bank_001``.
-    """
-
-    streams_by_application: dict[object, dict[tuple[object, object, object], str]] = {}
+    streams_by_key: dict[tuple[object, object, object], str] = {}
     stream_count = 0
 
     for row_id, row in output.loc[eligible_mask].iterrows():
@@ -201,18 +197,11 @@ def assign_grouped_product_streams(
             continue
 
         stream_key = (application_id, bank_account_id, counterparty)
-
-        application_streams = streams_by_application.setdefault(
-            application_id,
-            {},
-        )
-        if stream_key not in application_streams:
+        if stream_key not in streams_by_key:
             stream_count += 1
-            application_streams[stream_key] = (
-                f"{prefix}_{len(application_streams) + 1:03d}"
-            )
+            streams_by_key[stream_key] = f"{prefix}_{stream_count:03d}"
 
-        output.at[row_id, "stream_id"] = application_streams[stream_key]
+        output.at[row_id, "stream_id"] = streams_by_key[stream_key]
 
     return stream_count
 
@@ -886,9 +875,17 @@ def add_final_product_type(df: pd.DataFrame) -> pd.DataFrame:
         & stream_base.ne("")
     )
     output["final_product_type"] = pd.NA
-    output.loc[valid_mask, "final_product_type"] = (
-        product_type.loc[valid_mask] + "_" + stream_base.loc[valid_mask]
-    )
+    output.loc[valid_mask, "final_product_type"] = [
+        (
+            base
+            if base in {"bnpl", "wage_advance", "bank", "loc"}
+            else f"{product}_{base}"
+        )
+        for product, base in zip(
+            product_type.loc[valid_mask],
+            stream_base.loc[valid_mask],
+        )
+    ]
     return output
 
 
