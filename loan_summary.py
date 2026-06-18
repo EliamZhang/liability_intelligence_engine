@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import date
+from math import ceil
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 import re
@@ -44,6 +45,12 @@ FORTNIGHTLY = "fortnightly"
 MONEY_PRECISION = Decimal("0.01")
 WAGE_ADVANCE_TOTAL_MULTIPLIER = Decimal("1.05")
 WAGE_ADVANCE_RECENT_REPAY_RATE = Decimal("0.05")
+WEEKLY = "weekly"
+MONTHLY = "monthly"
+PERSONAL_LOAN_PRODUCT_TYPES = [
+    "personal_loan_non_sacc",
+    "personal_loan_sacc",
+]
 
 
 def parse_decimal_amount(value: object) -> Decimal | None:
@@ -218,6 +225,10 @@ def calculate_frequency_day(
     return None
 
 
+def parse_sample_datetime(value: object) -> pd.Timestamp | pd.NaT:
+    return pd.to_datetime(value, errors="coerce")
+
+
 def prepare_summary_input(df: pd.DataFrame) -> pd.DataFrame:
     output = ensure_final_product_type(df)
     output["_row_order"] = range(len(output))
@@ -225,6 +236,13 @@ def prepare_summary_input(df: pd.DataFrame) -> pd.DataFrame:
         output["transaction_date"],
         errors="coerce",
     )
+    if "sample_datetime" in output.columns:
+        output["_sample_datetime"] = pd.to_datetime(
+            output["sample_datetime"],
+            errors="coerce",
+        )
+    else:
+        output["_sample_datetime"] = pd.NaT
     return output
 
 
@@ -249,6 +267,221 @@ def filter_product_streams(
         & df["stream_id"].notna()
         & df["stream_id"].astype("string").str.strip().ne("")
     ].copy()
+
+
+def get_valid_credits(group: pd.DataFrame) -> pd.DataFrame:
+    ordered_group = sorted_stream_transactions(group)
+    return ordered_group[
+        ordered_group["dr_cr"].astype("string").str.casefold().eq("credit")
+        & ~ordered_group["is_dishonours"].map(is_yes)
+    ]
+
+
+def get_latest_funding(
+    group: pd.DataFrame,
+) -> tuple[pd.Timestamp | pd.NaT, Decimal]:
+    valid_credits = get_valid_credits(group)
+    if valid_credits.empty:
+        return pd.NaT, Decimal("0")
+
+    funded_row = valid_credits.iloc[-1]
+    funded_transaction_date = funded_row["_transaction_date"]
+    funded_amount = parse_absolute_amount(funded_row["amount"]) or Decimal("0")
+    return funded_transaction_date, round_money(funded_amount)
+
+
+def get_successful_debits_after_date(
+    group: pd.DataFrame,
+    start_date: pd.Timestamp | pd.NaT,
+) -> pd.DataFrame:
+    failed_repayments = mark_failed_repayments(group)
+    debit_mask = group["dr_cr"].astype("string").str.casefold().eq("debit")
+    valid_debit_mask = debit_mask & ~failed_repayments
+    if pd.isna(start_date):
+        return sorted_stream_transactions(group.loc[valid_debit_mask].iloc[0:0].copy())
+
+    debits = group.loc[
+        valid_debit_mask & group["_transaction_date"].gt(start_date)
+    ].copy()
+    return sorted_stream_transactions(debits)
+
+
+def sum_amounts(rows: pd.DataFrame, column: str = "amount") -> Decimal:
+    return round_money(sum(
+        (
+            amount
+            for amount in rows[column].map(parse_absolute_amount)
+            if amount is not None
+        ),
+        Decimal("0"),
+    ))
+
+
+def get_amount_series(rows: pd.DataFrame) -> list[Decimal]:
+    return [
+        amount
+        for amount in rows["amount"].map(parse_absolute_amount)
+        if amount is not None
+    ]
+
+
+def median_decimal(values: list[Decimal]) -> Decimal:
+    ordered = sorted(values)
+    count = len(ordered)
+    midpoint = count // 2
+    if count % 2 == 1:
+        return ordered[midpoint]
+    return (ordered[midpoint - 1] + ordered[midpoint]) / Decimal("2")
+
+
+def infer_frequency(
+    funded_transaction_date: pd.Timestamp | pd.NaT,
+    repayment_rows: pd.DataFrame,
+) -> str:
+    if repayment_rows.empty:
+        return FORTNIGHTLY
+
+    repayment_dates = sorted(
+        repayment_rows["_transaction_date"].dropna().tolist()
+    )
+    if not repayment_dates:
+        return FORTNIGHTLY
+
+    if len(repayment_dates) == 1:
+        if pd.isna(funded_transaction_date):
+            approx_freq = 14
+        else:
+            approx_freq = max(
+                0,
+                (repayment_dates[0].date() - funded_transaction_date.date()).days,
+            )
+    else:
+        intervals = [
+            max(0, (curr.date() - prev.date()).days)
+            for prev, curr in zip(repayment_dates, repayment_dates[1:])
+        ]
+        approx_freq = sorted(intervals)[len(intervals) // 2]
+
+    if approx_freq <= 9:
+        return WEEKLY
+    if approx_freq <= 18:
+        return FORTNIGHTLY
+    return MONTHLY
+
+
+def calculate_personal_loan_repayment_amount(
+    repayment_rows: pd.DataFrame,
+    funded_transaction_date: pd.Timestamp | pd.NaT,
+    transaction_end_date: pd.Timestamp | pd.NaT,
+) -> Decimal:
+    repayment_amounts = get_amount_series(repayment_rows)
+    repayment_count = len(repayment_amounts)
+    if repayment_count == 0:
+        return Decimal("0")
+    if repayment_count == 1:
+        return round_money(repayment_amounts[0])
+    if repayment_count == 2:
+        return round_money(sum(repayment_amounts) / Decimal("2"))
+
+    min_amount = min(repayment_amounts)
+    max_amount = max(repayment_amounts)
+    consistency_ratio = (
+        Decimal("0")
+        if max_amount == 0
+        else min_amount / max_amount
+    )
+    recent_three_amounts = repayment_amounts[-3:]
+    if consistency_ratio > Decimal("0.90"):
+        return round_money(median_decimal(recent_three_amounts))
+
+    if pd.isna(funded_transaction_date) or pd.isna(transaction_end_date):
+        return Decimal("0")
+
+    history_days = max(
+        0,
+        (transaction_end_date.date() - funded_transaction_date.date()).days,
+    )
+    if history_days >= 90:
+        lookback_start = transaction_end_date - pd.Timedelta(days=90)
+        lookback_rows = repayment_rows[
+            repayment_rows["_transaction_date"].ge(lookback_start)
+        ]
+        amount_90_days = sum_amounts(lookback_rows)
+        return round_money(abs((amount_90_days * Decimal("4")) / Decimal("26")))
+
+    actual_days = max(1, history_days)
+    total_repaid = sum_amounts(repayment_rows)
+    return round_money(abs((total_repaid / Decimal(actual_days)) * Decimal("14")))
+
+
+def calculate_recent_fn_repay_amount(
+    repayment_amount: Decimal,
+    repaid_amount: Decimal,
+    frequency: str,
+) -> Decimal:
+    if repaid_amount == 0:
+        return Decimal("0")
+    if frequency == MONTHLY:
+        return round_money((repayment_amount * Decimal("12")) / Decimal("26"))
+    if frequency == WEEKLY:
+        return round_money(repayment_amount * Decimal("2"))
+    return round_money(repayment_amount)
+
+
+def calculate_personal_loan_status(
+    funded_amount: Decimal,
+    repaid_amount: Decimal,
+    transaction_end_date: pd.Timestamp | pd.NaT,
+    sample_datetime: pd.Timestamp | pd.NaT,
+) -> str:
+    if funded_amount != 0:
+        lower_bound = funded_amount * Decimal("0.75")
+        upper_bound = funded_amount * Decimal("1.25")
+        if repaid_amount <= lower_bound:
+            return "Ongoing"
+        if repaid_amount <= upper_bound:
+            return "Closing Soon"
+        return "Closed"
+
+    if (
+        not pd.isna(transaction_end_date)
+        and not pd.isna(sample_datetime)
+        and transaction_end_date >= (sample_datetime - pd.Timedelta(days=33))
+    ):
+        return "Ongoing"
+    return "Closed"
+
+
+def calculate_predicted_closing_date(
+    stream_id: str,
+    status: str,
+    funded_amount: Decimal,
+    repaid_amount: Decimal,
+    repayment_amount: Decimal,
+    frequency: str,
+    transaction_end_date: pd.Timestamp | pd.NaT,
+) -> str:
+    if not stream_id.lower().startswith(("sacc_", "sacc-")):
+        return "NA"
+    if status == "Closed":
+        return "NA"
+    if repayment_amount <= 0 or pd.isna(transaction_end_date):
+        return "NA"
+
+    loan_amt_rmning = round_money(
+        round_money(funded_amount * Decimal("1.25")) - repaid_amount
+    )
+    rpmnts_rmning = max(0, ceil(float(loan_amt_rmning / repayment_amount)))
+
+    freq_days = {
+        WEEKLY: 7,
+        FORTNIGHTLY: 14,
+        MONTHLY: 31,
+    }.get(frequency, 14)
+    predicted_date = transaction_end_date + pd.Timedelta(
+        days=freq_days * rpmnts_rmning
+    )
+    return predicted_date.strftime("%Y-%m-%d")
 
 
 def build_bnpl_summary(
@@ -375,43 +608,12 @@ def build_wage_advance_summary(df: pd.DataFrame) -> pd.DataFrame:
         dropna=False,
         sort=False,
     ):
-        ordered_group = sorted_stream_transactions(group)
-        failed_repayments = mark_failed_repayments(group)
-
-        valid_credits = ordered_group[
-            ordered_group["dr_cr"].astype("string").str.casefold().eq("credit")
-            & ~ordered_group["is_dishonours"].map(is_yes)
-        ]
-
-        funded_transaction_date = pd.NaT
-        funded_amount = Decimal("0")
-        if not valid_credits.empty:
-            funded_row = valid_credits.iloc[-1]
-            funded_transaction_date = funded_row["_transaction_date"]
-            funded_amount = (
-                parse_absolute_amount(funded_row["amount"]) or Decimal("0")
-            )
-        funded_amount = round_money(funded_amount)
-
-        debit_mask = group["dr_cr"].astype("string").str.casefold().eq("debit")
-        valid_debit_mask = debit_mask & ~failed_repayments
-        if pd.isna(funded_transaction_date):
-            eligible_debits = group.loc[valid_debit_mask].iloc[0:0].copy()
-        else:
-            eligible_debits = group.loc[
-                valid_debit_mask
-                & group["_transaction_date"].gt(funded_transaction_date)
-            ]
-        eligible_debits = sorted_stream_transactions(eligible_debits)
-
-        repaid_amount = round_money(sum(
-            (
-                amount
-                for amount in eligible_debits["amount"].map(parse_absolute_amount)
-                if amount is not None
-            ),
-            Decimal("0"),
-        ))
+        funded_transaction_date, funded_amount = get_latest_funding(group)
+        eligible_debits = get_successful_debits_after_date(
+            group,
+            funded_transaction_date,
+        )
+        repaid_amount = sum_amounts(eligible_debits)
 
         total_remaining = round_money(
             funded_amount * WAGE_ADVANCE_TOTAL_MULTIPLIER
@@ -463,6 +665,97 @@ def build_wage_advance_summary(df: pd.DataFrame) -> pd.DataFrame:
     return summary[SUMMARY_COLUMNS]
 
 
+def build_personal_loan_summary(df: pd.DataFrame) -> pd.DataFrame:
+    """Return one summary row per personal-loan non-sacc/sacc stream."""
+
+    output = prepare_summary_input(df)
+    personal_loans = output[
+        output["final_product_type"].astype("string").isin(
+            PERSONAL_LOAN_PRODUCT_TYPES
+        )
+        & output["stream_id"].notna()
+        & output["stream_id"].astype("string").str.strip().ne("")
+    ].copy()
+
+    if personal_loans.empty:
+        return empty_summary()
+
+    due_date_columns = get_due_date_columns(personal_loans)
+    summary_rows: list[dict[str, object]] = []
+
+    for (final_product_type, stream_id_value), group in personal_loans.groupby(
+        ["final_product_type", "stream_id"],
+        dropna=False,
+        sort=False,
+    ):
+        funded_transaction_date, funded_amount = get_latest_funding(group)
+        repayment_rows = get_successful_debits_after_date(
+            group,
+            funded_transaction_date,
+        )
+        repaid_amount = sum_amounts(repayment_rows)
+        transaction_end_date = group["_transaction_date"].max()
+        repayment_amount = calculate_personal_loan_repayment_amount(
+            repayment_rows,
+            funded_transaction_date,
+            transaction_end_date,
+        )
+        frequency = infer_frequency(
+            funded_transaction_date,
+            repayment_rows,
+        )
+        recent_fn_repay_amount = calculate_recent_fn_repay_amount(
+            repayment_amount,
+            repaid_amount,
+            frequency,
+        )
+        sample_datetime = group["_sample_datetime"].max()
+        status = calculate_personal_loan_status(
+            funded_amount,
+            repaid_amount,
+            transaction_end_date,
+            sample_datetime,
+        )
+        predicted_closing_date = calculate_predicted_closing_date(
+            normalize_text(stream_id_value),
+            status,
+            funded_amount,
+            repaid_amount,
+            repayment_amount,
+            frequency,
+            transaction_end_date,
+        )
+
+        summary_rows.append(
+            {
+                "final_product_type": final_product_type,
+                "stream_id": stream_id_value,
+                "application_id": normalize_text(group["application_id"].iloc[0]),
+                "counterparty": normalize_text(group["counterparty"].iloc[0]),
+                "transaction_start_date": group["_transaction_date"].min(),
+                "transaction_end_date": transaction_end_date,
+                "status": status,
+                "funded_amount": decimal_to_output(funded_amount),
+                "repaid_amount": decimal_to_output(repaid_amount),
+                "repayment_amount": decimal_to_output(repayment_amount),
+                "recent_fn_repay_amount": decimal_to_output(
+                    recent_fn_repay_amount
+                ),
+                "frequency": frequency,
+                "frequency_day": calculate_frequency_day(
+                    repayment_rows,
+                    due_date_columns,
+                ),
+                "predicted_closing_date": predicted_closing_date,
+            }
+        )
+
+    summary = pd.DataFrame(summary_rows, columns=SUMMARY_COLUMNS)
+    summary["transaction_start_date"] = summary["transaction_start_date"].dt.date
+    summary["transaction_end_date"] = summary["transaction_end_date"].dt.date
+    return summary[SUMMARY_COLUMNS]
+
+
 def build_loan_summary(
     df: pd.DataFrame,
     limits_file: str | Path = "resources/bnpl_maximum_limits.csv",
@@ -471,6 +764,7 @@ def build_loan_summary(
     summaries = [
         build_bnpl_summary(df, limits=limits),
         build_wage_advance_summary(df),
+        build_personal_loan_summary(df),
     ]
     summaries = [summary for summary in summaries if not summary.empty]
     if not summaries:

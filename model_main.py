@@ -24,7 +24,7 @@ with TemporaryDirectory() as temp_dir:
 
     detect_dishonours(
         counterparty_file,
-        "dishonours_rules.csv",
+        "resources/dishonours_rules.csv",
         dishonours_file,
     )
 
