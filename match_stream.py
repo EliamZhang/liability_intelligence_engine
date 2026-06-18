@@ -9,7 +9,7 @@ def assign_stream_ids(input_file, output_file):
         if "stream_id" not in fieldnames:
             fieldnames.append("stream_id")
 
-    stream_prefixes = {"bnpl": "bnpl", "wage_advance": "wage_advance", "bank": "bank"}
+    stream_prefixes = {"bnpl": "bnpl", "wage_advance": "wage_advance", "bank": "bank", "loc": "loc"}
     streams = {}
     for row in rows:
         row["stream_id"] = ""
