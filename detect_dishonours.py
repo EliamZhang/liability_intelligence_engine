@@ -3,7 +3,6 @@ import os
 import re
 
 FIELD_NAME = "is_dishonours"
-LEGACY_FIELD_NAME = "\u662f\u5426Dishonours"
 
 
 def load_rules(rules_file):
@@ -34,12 +33,9 @@ def process_file(input_file, rules_file, output_file):
     with open(input_file, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
         fieldnames = list(rows[0]) if rows else []
-        if LEGACY_FIELD_NAME in fieldnames:
-            fieldnames.remove(LEGACY_FIELD_NAME)
         if FIELD_NAME not in fieldnames:
             fieldnames.append(FIELD_NAME)
     for row in rows:
-        row.pop(LEGACY_FIELD_NAME, None)
         row[FIELD_NAME] = is_dishonour(row.get("text"), rules)
     temp_file = output_file + ".tmp"
     with open(temp_file, "w", encoding="utf-8-sig", newline="") as f:

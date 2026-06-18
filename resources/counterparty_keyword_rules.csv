@@ -1,31 +1,10 @@
 keyword,counterparty,product_type,match_type
-WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC CARDS;FROM Westpa c Choice,WESTPAC Credit Card Repayment,bank,keyword
-NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB Credit Card Repayment,bank,keyword
-Latitude Credit Card Repayment; LATITUDE GO;BPAY LATITUDE GEM,Latitude Credit Card Repayment,bank,keyword
-ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans,ING Credit Card Repayment,bank,keyword
-COLES MASTERCARD,Coles Credit Card Repayment,bank,keyword
-"PAYMENT RECEIVED, THANK YOU;PAYMENT RECEIVED",CBA Credit Card Repayment,bank,keyword
-BANKWEST Credit Card Cash Adva; BANKWEST Loans; ,Bankwest Credit Card Repayment,bank,keyword
-ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ Credit Card Repayment,bank,keyword
-AMERICAN EXPRESS CommBank app BPAY,American Express Credit Card Repayment,bank,keyword
-Payment - BPAY,Miscellaneous Credit Card Repayments,bank,keyword
-1 of 4;2 of 4;3 of 4;4 of 4;,NAB Now Pay Later,bnpl,keyword
-Zip Plus,Zip Plus,bnpl,keyword
-Zip Pay; ZIPPAY,Zip Pay,bnpl,keyword
-Zipmoney; Zip Money,Zip Money,bnpl,keyword
-Payright,Payright,bnpl,keyword
-Paypal Pay in 4; PayPal Pay in 4; Pay in 4; Payin4,PayPal Pay in 4,bnpl,keyword
-NAB Now Pay Later,NAB Now Pay Later,bnpl,keyword
-Lowes Zero Card,Lowes Zero Card,bnpl,keyword
-Layaway,Layaway,bnpl,keyword
-Klarna,Klarna,bnpl,keyword
-Humm; humm loan,Humm,bnpl,keyword
-Gimmie,Gimmie,bnpl,keyword
-Deferit,Deferit,bnpl,keyword
-CBA StepPay; StepPay Repayment; STEPPAY PYMT-THANK YOU,CBA StepPay,bnpl,keyword
-Brighte,Brighte,bnpl,keyword
-Beforepay; Beforepay: Borrow up to 2000; BeforepayCT,Beforepay,bnpl,keyword
-Afterpay; Afterpay: Shop Smarter,Afterpay,bnpl,keyword
+Wagetap; Wagetap: Instant Cash Advance,Wagetap,wage_advance,keyword
+Wagepay; Wagepay: Instant Pay Advance; WAGEPAYCT,Wagepay,wage_advance,keyword
+Press Pay; PressPay,PressPay,wage_advance,keyword
+Payday Advance; Payday Loans,Payday Advance,wage_advance,keyword
+MyPayNow,MyPayNow,wage_advance,keyword
+Auto Finance Loans; Car Loan,Auto Finance Loans,car_loan,keyword
 Yamaha Motor Finance; Yamaha Motor Fin,Yamaha Motor Finance,personal_loan,keyword
 Wisr; Wisr-smarter money habits,Wisr,personal_loan,keyword
 Volkswagen Financial,Volkswagen Financial,personal_loan,keyword
@@ -124,7 +103,6 @@ Branded Financial,Branded Financial,personal_loan,keyword
 Azora Finance,Azora Finance,personal_loan,keyword
 Autopay,Autopay,personal_loan,keyword
 Automotive Financial Services,Automotive Financial Services,personal_loan,keyword
-Auto Finance Loans; Car Loan,Auto Finance Loans,personal_loan_carloan,keyword
 Arteva Funding,Arteva Funding,personal_loan,keyword
 APS Loans,APS Loans,personal_loan,keyword
 Angle Finance,Angle Finance,personal_loan,keyword
@@ -132,8 +110,30 @@ Allied Retail Finance,Allied Retail Finance,personal_loan,keyword
 Affordable Car Loans,Affordable Car Loans,personal_loan,keyword
 360 Cash Loans; LazerMoney; 30/12 Financier,360 Cash Loans,personal_loan,keyword
 1st Choice Rentals,1st Choice Rentals,personal_loan,keyword
-Wagetap; Wagetap: Instant Cash Advance,Wagetap,wage_advance,keyword
-Wagepay; Wagepay: Instant Pay Advance; WAGEPAYCT,Wagepay,wage_advance,keyword
-Press Pay; PressPay,PressPay,wage_advance,keyword
-Payday Advance; Payday Loans,Payday Advance,wage_advance,keyword
-MyPayNow,MyPayNow,wage_advance,keyword
+1 of 4;2 of 4;3 of 4;4 of 4;,NAB Now Pay Later,bnpl,keyword
+Zip Plus,Zip Plus,bnpl,keyword
+Zip Pay; ZIPPAY,Zip Pay,bnpl,keyword
+Zipmoney; Zip Money,Zip Money,bnpl,keyword
+Payright,Payright,bnpl,keyword
+Paypal Pay in 4; PayPal Pay in 4; Pay in 4; Payin4,PayPal Pay in 4,bnpl,keyword
+NAB Now Pay Later,NAB Now Pay Later,bnpl,keyword
+Lowes Zero Card,Lowes Zero Card,bnpl,keyword
+Layaway,Layaway,bnpl,keyword
+Klarna,Klarna,bnpl,keyword
+Humm; humm loan,Humm,bnpl,keyword
+Gimmie,Gimmie,bnpl,keyword
+Deferit,Deferit,bnpl,keyword
+CBA StepPay; StepPay Repayment; STEPPAY PYMT-THANK YOU,CBA StepPay,bnpl,keyword
+Brighte,Brighte,bnpl,keyword
+Beforepay; Beforepay: Borrow up to 2000; BeforepayCT,Beforepay,bnpl,keyword
+Afterpay; Afterpay: Shop Smarter,Afterpay,bnpl,keyword
+WESTPAC Credit Card Cash Advan; WESTPAC Loan Redraw; WESTPAC Loan Repayment; WESTPAC CARDS;FROM Westpa c Choice,WESTPAC Credit Card Repayment,bank,keyword
+NAB Credit Card Cash Advance T; NAB Loan Redraw; NAB Loan Repayment; NAB; LOAN INSTALMENT TO A/C,NAB Credit Card Repayment,bank,keyword
+Latitude Credit Card Repayment; LATITUDE GO;BPAY LATITUDE GEM,Latitude Credit Card Repayment,bank,keyword
+ING Loan Redraw Credit; ING Loan Redraw; ING Loan Repayment Debit; ING Loans,ING Credit Card Repayment,bank,keyword
+COLES MASTERCARD,Coles Credit Card Repayment,bank,keyword
+"PAYMENT RECEIVED, THANK YOU;PAYMENT RECEIVED",CBA Credit Card Repayment,bank,keyword
+BANKWEST Credit Card Cash Adva; BANKWEST Loans; ,Bankwest Credit Card Repayment,bank,keyword
+ANZ Credit Card Cash Advance T; ANZ Loan Redraw; ANZ Loan Repayment; ANZ,ANZ Credit Card Repayment,bank,keyword
+AMERICAN EXPRESS CommBank app BPAY,American Express Credit Card Repayment,bank,keyword
+Payment - BPAY,Miscellaneous Credit Card Repayments,bank,keyword
