@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import date
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 import re
 
@@ -17,6 +17,7 @@ TRANSACTION_SHEET_NAME = "交易明细"
 SUMMARY_COLUMNS = [
     "final_product_type",
     "stream_id",
+    "application_id",
     "counterparty",
     "transaction_start_date",
     "transaction_end_date",
@@ -39,6 +40,10 @@ DUE_DATE_COLUMN_CANDIDATES = [
 ]
 
 BNPL_LIMIT_COLUMNS = ["counterparty", "bnpl_max_fn_limit"]
+FORTNIGHTLY = "fortnightly"
+MONEY_PRECISION = Decimal("0.01")
+WAGE_ADVANCE_TOTAL_MULTIPLIER = Decimal("1.05")
+WAGE_ADVANCE_RECENT_REPAY_RATE = Decimal("0.05")
 
 
 def parse_decimal_amount(value: object) -> Decimal | None:
@@ -53,6 +58,23 @@ def parse_decimal_amount(value: object) -> Decimal | None:
         return Decimal(text)
     except InvalidOperation:
         return None
+
+
+def parse_absolute_amount(value: object) -> Decimal | None:
+    amount = parse_decimal_amount(value)
+    if amount is None:
+        return None
+    return abs(amount)
+
+
+def round_money(amount: Decimal) -> Decimal:
+    return amount.quantize(MONEY_PRECISION, rounding=ROUND_HALF_UP)
+
+
+def decimal_to_output(value: Decimal | None) -> float | None:
+    if value is None:
+        return None
+    return float(round_money(value))
 
 
 def normalize_text(value: object) -> str:
@@ -196,6 +218,39 @@ def calculate_frequency_day(
     return None
 
 
+def prepare_summary_input(df: pd.DataFrame) -> pd.DataFrame:
+    output = ensure_final_product_type(df)
+    output["_row_order"] = range(len(output))
+    output["_transaction_date"] = pd.to_datetime(
+        output["transaction_date"],
+        errors="coerce",
+    )
+    return output
+
+
+def get_due_date_columns(df: pd.DataFrame) -> list[str]:
+    return [
+        column for column in DUE_DATE_COLUMN_CANDIDATES if column in df.columns
+    ]
+
+
+def empty_summary() -> pd.DataFrame:
+    return pd.DataFrame(columns=SUMMARY_COLUMNS)
+
+
+def filter_product_streams(
+    df: pd.DataFrame,
+    final_product_type: str,
+) -> pd.DataFrame:
+    return df[
+        df["final_product_type"].astype("string").str.casefold().eq(
+            final_product_type.casefold()
+        )
+        & df["stream_id"].notna()
+        & df["stream_id"].astype("string").str.strip().ne("")
+    ].copy()
+
+
 def build_bnpl_summary(
     df: pd.DataFrame,
     limits: pd.DataFrame | None = None,
@@ -204,25 +259,14 @@ def build_bnpl_summary(
     """Return one BNPL summary row per final_product_type + stream_id."""
 
     as_of_date = as_of_date or date.today()
-    output = ensure_final_product_type(df)
-    output["_row_order"] = range(len(output))
-    output["_transaction_date"] = pd.to_datetime(
-        output["transaction_date"],
-        errors="coerce",
-    )
+    output = prepare_summary_input(df)
 
-    bnpl = output[
-        output["final_product_type"].astype("string").str.casefold().eq("bnpl")
-        & output["stream_id"].notna()
-        & output["stream_id"].astype("string").str.strip().ne("")
-    ].copy()
+    bnpl = filter_product_streams(output, "bnpl")
 
     if bnpl.empty:
-        return pd.DataFrame(columns=SUMMARY_COLUMNS)
+        return empty_summary()
 
-    due_date_columns = [
-        column for column in DUE_DATE_COLUMN_CANDIDATES if column in bnpl.columns
-    ]
+    due_date_columns = get_due_date_columns(bnpl)
     limits = limits if limits is not None else load_bnpl_maximum_limits()
     limits_by_counterparty = (
         limits.set_index("_counterparty_key")["_limit_amount"].to_dict()
@@ -243,11 +287,14 @@ def build_bnpl_summary(
         debit_mask = group["dr_cr"].astype("string").str.casefold().eq("debit")
         valid_debits = group.loc[debit_mask & ~failed_repayments]
 
-        repaid_amount = sum(
-            abs(amount)
-            for amount in valid_debits["amount"].map(parse_decimal_amount)
-            if amount is not None
-        )
+        repaid_amount = round_money(sum(
+            (
+                amount
+                for amount in valid_debits["amount"].map(parse_absolute_amount)
+                if amount is not None
+            ),
+            Decimal("0"),
+        ))
 
         frequency_day_date = calculate_frequency_day(
             sorted_stream_transactions(valid_debits),
@@ -258,15 +305,16 @@ def build_bnpl_summary(
             {
                 "final_product_type": final_product_type,
                 "stream_id": stream_id_value,
+                "application_id": normalize_text(group["application_id"].iloc[0]),
                 "counterparty": normalize_text(group["counterparty"].iloc[0]),
                 "transaction_start_date": group["_transaction_date"].min(),
                 "transaction_end_date": group["_transaction_date"].max(),
                 "status": "Closed",
                 "funded_amount": 0,
-                "repaid_amount": float(repaid_amount),
+                "repaid_amount": decimal_to_output(repaid_amount),
                 "repayment_amount": None,
                 "recent_fn_repay_amount": None,
-                "frequency": "fortnightly",
+                "frequency": FORTNIGHTLY,
                 "frequency_day": frequency_day_date,
                 "predicted_closing_date": None,
             }
@@ -301,17 +349,134 @@ def build_bnpl_summary(
         else:
             recent_fn_repay_amount = None
 
-        numeric_recent = (
-            float(recent_fn_repay_amount)
-            if recent_fn_repay_amount is not None
-            else None
-        )
+        numeric_recent = decimal_to_output(recent_fn_repay_amount)
         summary.at[row_id, "recent_fn_repay_amount"] = numeric_recent
         summary.at[row_id, "repayment_amount"] = numeric_recent
 
     summary["transaction_start_date"] = summary["transaction_start_date"].dt.date
     summary["transaction_end_date"] = summary["transaction_end_date"].dt.date
     return summary[SUMMARY_COLUMNS]
+
+
+def build_wage_advance_summary(df: pd.DataFrame) -> pd.DataFrame:
+    """Return one wage-advance summary row per final_product_type + stream_id."""
+
+    output = prepare_summary_input(df)
+    wage_advance = filter_product_streams(output, "wage_advance")
+
+    if wage_advance.empty:
+        return empty_summary()
+
+    due_date_columns = get_due_date_columns(wage_advance)
+    summary_rows: list[dict[str, object]] = []
+
+    for (final_product_type, stream_id_value), group in wage_advance.groupby(
+        ["final_product_type", "stream_id"],
+        dropna=False,
+        sort=False,
+    ):
+        ordered_group = sorted_stream_transactions(group)
+        failed_repayments = mark_failed_repayments(group)
+
+        valid_credits = ordered_group[
+            ordered_group["dr_cr"].astype("string").str.casefold().eq("credit")
+            & ~ordered_group["is_dishonours"].map(is_yes)
+        ]
+
+        funded_transaction_date = pd.NaT
+        funded_amount = Decimal("0")
+        if not valid_credits.empty:
+            funded_row = valid_credits.iloc[-1]
+            funded_transaction_date = funded_row["_transaction_date"]
+            funded_amount = (
+                parse_absolute_amount(funded_row["amount"]) or Decimal("0")
+            )
+        funded_amount = round_money(funded_amount)
+
+        debit_mask = group["dr_cr"].astype("string").str.casefold().eq("debit")
+        valid_debit_mask = debit_mask & ~failed_repayments
+        if pd.isna(funded_transaction_date):
+            eligible_debits = group.loc[valid_debit_mask].iloc[0:0].copy()
+        else:
+            eligible_debits = group.loc[
+                valid_debit_mask
+                & group["_transaction_date"].gt(funded_transaction_date)
+            ]
+        eligible_debits = sorted_stream_transactions(eligible_debits)
+
+        repaid_amount = round_money(sum(
+            (
+                amount
+                for amount in eligible_debits["amount"].map(parse_absolute_amount)
+                if amount is not None
+            ),
+            Decimal("0"),
+        ))
+
+        total_remaining = round_money(
+            funded_amount * WAGE_ADVANCE_TOTAL_MULTIPLIER
+        )
+        repayment_remaining = round_money(total_remaining - repaid_amount)
+        if repayment_remaining <= 0:
+            recent_fn_repay_amount = Decimal("0")
+        else:
+            recent_fn_repay_amount = round_money(
+                funded_amount * WAGE_ADVANCE_RECENT_REPAY_RATE
+            )
+
+        status = (
+            "Closed"
+            if (
+                recent_fn_repay_amount == 0
+                and repaid_amount >= total_remaining
+            )
+            else "Ongoing"
+        )
+
+        summary_rows.append(
+            {
+                "final_product_type": final_product_type,
+                "stream_id": stream_id_value,
+                "application_id": normalize_text(group["application_id"].iloc[0]),
+                "counterparty": normalize_text(group["counterparty"].iloc[0]),
+                "transaction_start_date": group["_transaction_date"].min(),
+                "transaction_end_date": group["_transaction_date"].max(),
+                "status": status,
+                "funded_amount": decimal_to_output(funded_amount),
+                "repaid_amount": decimal_to_output(repaid_amount),
+                "repayment_amount": decimal_to_output(recent_fn_repay_amount),
+                "recent_fn_repay_amount": decimal_to_output(
+                    recent_fn_repay_amount
+                ),
+                "frequency": FORTNIGHTLY,
+                "frequency_day": calculate_frequency_day(
+                    eligible_debits,
+                    due_date_columns,
+                ),
+                "predicted_closing_date": None,
+            }
+        )
+
+    summary = pd.DataFrame(summary_rows, columns=SUMMARY_COLUMNS)
+    summary["transaction_start_date"] = summary["transaction_start_date"].dt.date
+    summary["transaction_end_date"] = summary["transaction_end_date"].dt.date
+    return summary[SUMMARY_COLUMNS]
+
+
+def build_loan_summary(
+    df: pd.DataFrame,
+    limits_file: str | Path = "resources/bnpl_maximum_limits.csv",
+) -> pd.DataFrame:
+    limits = load_bnpl_maximum_limits(limits_file)
+    summaries = [
+        build_bnpl_summary(df, limits=limits),
+        build_wage_advance_summary(df),
+    ]
+    summaries = [summary for summary in summaries if not summary.empty]
+    if not summaries:
+        return empty_summary()
+
+    return pd.concat(summaries, ignore_index=True)[SUMMARY_COLUMNS]
 
 
 def write_loan_summary_workbook(
@@ -331,8 +496,7 @@ def write_loan_summary_workbook(
 
     transactions = pd.read_csv(transactions_csv, encoding="utf-8-sig")
     transactions = ensure_final_product_type(transactions)
-    limits = load_bnpl_maximum_limits(limits_file)
-    summary = build_bnpl_summary(transactions, limits=limits)
+    summary = build_loan_summary(transactions, limits_file=limits_file)
 
     mode = "a" if workbook_path.exists() else "w"
     writer_kwargs: dict[str, object] = {"engine": "openpyxl", "mode": mode}

@@ -4,8 +4,8 @@ Priority is defined in ``PRODUCT_RULES``:
 BNPL -> Wage Advance -> Bank -> Personal Loan -> LOC.
 
 The final LOC stage contains a controlled refinement rule: after personal-
-loan streams have been created, qualifying ``sacc-*`` streams can be merged
-into one ``loc-*`` stream. This refinement depends on personal-loan output
+loan streams have been created, qualifying ``sacc_*`` streams can be merged
+into one ``loc_*`` stream. This refinement depends on personal-loan output
 and therefore must run last.
 """
 
@@ -32,13 +32,19 @@ SIMPLE_STREAM_GROUP_COLUMNS = [
     "bank_account_id",
     "counterparty",
 ]
+SIMPLE_STREAM_SORT_COLUMNS = [
+    "application_id",
+    "bank_account_id",
+    "counterparty",
+]
 
 PERSONAL_LOAN = "personal_loan"
 DISHONOUR_COLUMN = "is_dishonours"
 AMOUNT_TOLERANCE = Decimal("0.05")
 
-SACC_PREFIX = "sacc-"
-SPECIAL_LOC_PREFIX = "loc-"
+SACC_PREFIX = "sacc_"
+LEGACY_SACC_PREFIX = "sacc-"
+SPECIAL_LOC_PREFIX = "loc_"
 DEFAULT_MIN_SACC_STREAMS = 3
 DEFAULT_LOC_CV_THRESHOLD = Decimal("0.2")
 
@@ -102,16 +108,16 @@ class PersonalLoanStreamIdGenerator:
     """Generate the existing personal-loan stream ID formats."""
 
     def __init__(self) -> None:
-        self._counters = {"sacc": 0, "non-sacc": 0, "unknown": 0}
+        self._counters = {"sacc": 0, "non_sacc": 0, "unknown": 0}
 
     def next_for_amount(self, amount: Decimal) -> str:
-        prefix = "sacc" if amount <= Decimal("2000") else "non-sacc"
+        prefix = "sacc" if amount <= Decimal("2000") else "non_sacc"
         self._counters[prefix] += 1
-        return f"{prefix}-{self._counters[prefix]:03d}"
+        return f"{prefix}_{self._counters[prefix]:03d}"
 
     def next_unknown(self) -> str:
         self._counters["unknown"] += 1
-        return f"unknown-{self._counters['unknown']:03d}"
+        return f"unknown_{self._counters['unknown']:03d}"
 
 
 # ---------------------------------------------------------------------------
@@ -182,12 +188,26 @@ def assign_grouped_product_streams(
     eligible_mask: pd.Series,
     prefix: str,
 ) -> int:
-    """Assign one globally unique stream per account + counterparty group."""
+    """Assign one globally unique stream per account + counterparty group.
+
+    Stream numbering is based on a stable business sort so IDs do not depend
+    on the raw input row order.
+    """
 
     streams_by_key: dict[tuple[object, object, object], str] = {}
     stream_count = 0
+    sort_columns = [
+        column for column in SIMPLE_STREAM_SORT_COLUMNS if column in output.columns
+    ]
+    eligible_rows = output.loc[eligible_mask]
+    if sort_columns:
+        eligible_rows = eligible_rows.sort_values(
+            sort_columns,
+            kind="stable",
+            na_position="last",
+        )
 
-    for row_id, row in output.loc[eligible_mask].iterrows():
+    for row_id, row in eligible_rows.iterrows():
         group_values = tuple(
             normalize_group_value(row.get(column, ""))
             for column in SIMPLE_STREAM_GROUP_COLUMNS
@@ -550,7 +570,7 @@ def identify_personal_loan_streams(
 
 
 class LocStreamIdGenerator:
-    """Generate ``loc-001`` IDs without colliding with existing special LOC IDs."""
+    """Generate ``loc_001`` IDs without colliding with existing special LOC IDs."""
 
     def __init__(self, existing_stream_ids: pd.Series) -> None:
         self._counter = self._find_max_counter(existing_stream_ids)
@@ -560,7 +580,7 @@ class LocStreamIdGenerator:
         max_counter = 0
 
         for value in existing_stream_ids.dropna().astype(str):
-            match = re.fullmatch(r"loc-(\d+)", value.strip().lower())
+            match = re.fullmatch(r"loc[-_](\d+)", value.strip().lower())
             if match:
                 max_counter = max(max_counter, int(match.group(1)))
 
@@ -608,7 +628,13 @@ def build_sacc_funding_table(
     stream_id_text = output["stream_id"].astype("string")
     eligible_mask = (
         output["product_type"].eq(PERSONAL_LOAN)
-        & stream_id_text.str.lower().str.startswith(SACC_PREFIX, na=False)
+        & (
+            stream_id_text.str.lower().str.startswith(SACC_PREFIX, na=False)
+            | stream_id_text.str.lower().str.startswith(
+                LEGACY_SACC_PREFIX,
+                na=False,
+            )
+        )
         & output["dr_cr"].astype("string").str.lower().eq("credit")
         & ~output["_is_dishonour_credit"]
     )
@@ -670,7 +696,7 @@ def merge_sacc_streams_into_loc(
 
     A group qualifies when it has at least ``min_sacc_streams`` SACC streams
     and the coefficient of variation of their funding amounts is greater than
-    ``cv_threshold``. Only the matching ``sacc-*`` stream IDs are replaced.
+    ``cv_threshold``. Only the matching ``sacc_*`` stream IDs are replaced.
     """
 
     if min_sacc_streams < 2:
@@ -759,7 +785,7 @@ def identify_loc_streams(
 
     1. Assign original ``product_type == loc`` rows using the existing grouped
        rule and ``loc_001`` format.
-    2. Refine qualifying personal-loan ``sacc-*`` streams into ``loc-*``.
+    2. Refine qualifying personal-loan ``sacc_*`` streams into ``loc_*``.
     """
 
     direct_loc_count = identify_direct_loc_streams(
